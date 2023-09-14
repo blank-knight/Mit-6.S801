@@ -8,4 +8,4 @@ user: 用户层函数（lab作业就放这里面）
 
 grade-lab-util: lab作业测试打分文件
 
-每次lab作业完成后，将起编译选项加入makefile里面，之后./grade-lab-util sleep即可测试
+每次lab作业完成后，将起编译选项加入makefile里面，之后./grade-lab-util+函数名即可测试
