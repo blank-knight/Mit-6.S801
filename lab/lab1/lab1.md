@@ -175,11 +175,15 @@ grep x < out
 // exec.c: replace a process with an executable file
 #include“kernel/types.h"
 #include“user/user.h"
-intmain()
-// C是一个非常低阶（接近机器语言）的编程语言，并没有一个方法来确定一个数组究竟有多长。所以为了告诉内核数组的结尾在哪，我们将0作为最后一个指针
-char *argv[] ={"echo","this",“is"，"echo"，0 };exec("echo"，argv);
-printf("exec failed!\n");
-exit(0);
+int main()
+{
+    // C是一个非常低阶（接近机器语言）的编程语言，并没有一个方法来确定一个数组究竟有多长。所以为了告诉内核数组的结尾在哪，我们将0作为最后一个指针
+    char *argv[] ={"echo","this",“is"，"echo"，0 };
+    exec("echo"，argv);
+    printf("exec failed!\n");
+    exit(0);
+}
+
 ```
 10. fork与exec的组合妙用：exec会替换当前程序，但我们并不像覆盖当前主程序，因此最好的方法便是fork一个出来，然后执行exec即可。
 ```C
