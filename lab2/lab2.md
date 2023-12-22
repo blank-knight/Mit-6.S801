@@ -128,7 +128,9 @@ ssh-keygen // 生成密钥，注意，如果这里设置了密码。在远程登
 
 改权限`sudo chmod 700 .ssh`和`sudo chmod 600  ~/.ssh/authorized_keys` 保证只有用户自己有权限进行验证，否则验证无效
 
-改配置。windows客户端：![Alt text](image-2.png)除了正常添加外，还要加如图红框中的东西，允许公钥登录和本地私钥路径
+改配置。windows客户端：
+
+![Alt text](image-2.png)除了正常添加外，还要加如图红框中的东西，允许公钥登录和本地私钥路径
 
 Linux服务端：
 ```shell
