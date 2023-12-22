@@ -56,7 +56,13 @@ Micro Kernel Design（微内核）：kernel mode中代码尽可能少。优缺�
 5. 修改 kernel/syscall.c 中的 syscall ()函数以打印跟踪输出。您需要添加要索引到的系统调用名称数组。
 
 ### 整体思路
-按照提示在相应位置添加函数即可。关键在于trace()函数的编码：在trapframe中，a0 到 a7:为保存参数寄存器（argument registers）的值，用于传递函数参数，其中，a7为传递给系统调用的参数，a0为系统调用后返回的值。因此trace():
+按照提示在相应位置添加函数即可：
+1. 添加系统调用到user/user.h让用户能够从用户态跳转调用。
+2. 修改user/usys.pl，生成stubs文本指令，用于调用。
+3. 修改syscall对应文件，把trace相关的添加进来
+4. 由于要跟踪进程，因此在sysproc和proc里面还要做相应修改
+
+关键在于trace()函数的编码：在trapframe中，a0 到 a7:为保存参数寄存器（argument registers）的值，用于传递函数参数，其中，a7为传递给系统调用的参数，a0为系统调用后返回的值。因此trace():
 ```C
 uint64
 sys_trace(void)
@@ -164,4 +170,4 @@ git config --global user.email  useremail@qq.com
 ```
 2. 分支
 
-查看分支：`git branch -a`,选择分支`git checkout 分支名称`
+查看分支：`git branch -a`,选择分支`git checkout 分支名称`。切换前暂存修改`git stash`,切换后将修改应用上去`git stash apply`
