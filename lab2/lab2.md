@@ -75,8 +75,8 @@ sys_trace(void)
 
 ## 其他
 ### 内网穿透和vscode远程连接
-自习室电脑用的局域网，于是做了个内网穿透并用vscode远程连接。
-#### 服务端
+自习室电脑用的局域网，于是做了个内网穿透并用vscode远程连接。这个讲的可以[linux笔记-ssh服务](https://blog.csdn.net/cPen_web/article/details/109709434)
+#### 局域网连接
 1. 安装ssh 
 ```shell
 sudo apt install openssh-server
@@ -109,4 +109,59 @@ sudo ufw allow 22/tcp
 ```shell
 ssh root@192.168.3.219
 ```
+如果使用用户登录，就不用设置后面的公私钥登录了
 
+8. 设置公私钥登录
+```shell
+ssh-keygen // 生成密钥，注意，如果这里设置了密码。在远程登录时，还是需要输入ssh密码
+```
+9. 密钥分配
+私钥留在本地客户端`C:\Users\zwt\.ssh`，公钥.pub给服务器放在这里`cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys`。
+
+10. 修改权限和配置
+
+改权限`sudo chmod 700 .ssh`和`sudo chmod 600  ~/.ssh/authorized_keys` 保证只有用户自己有权限进行验证，否则验证无效
+
+改配置。windows客户端：![Alt text](image-2.png)除了正常添加外，还要加如图红框中的东西，允许公钥登录和本地私钥路径
+
+Linux服务端：
+```shell
+sudo vim /etc/ssh/sshd_config
+```
+将PubbkeyAuthentication 字段改为Yes，如果不行，把PasswordAuthentication 也改为Yes。在vim中,Esc后/和？分别可以向后和向前搜索字段。
+
+之后重启服务`sudo systemctl restart sshd`
+
+注意：将Linux中私钥复制到windows时最后一行会少一个回车。而且创建公私钥时如果设置了密码，那么用这个公私钥登录还是要输密码（创建时设置的）
+
+### 内网穿透
+
+使用ngrok实现
+1. 安装
+```shell
+ snap install ngrok
+```
+2. 根据token添加配置
+token去ngrok官网注册而来
+```shell
+ngrok config add-authtoken <token>
+```
+3. 开启连接，生成新的公网IP
+```shell
+ngrok tcp 22
+```
+4. 客户端进行连接
+```shell
+ssh username@0.tcp.ngrok.io -p*****
+```
+其中*****为ngrok的代理端口
+
+### git操作
+1. 设置用户名和邮箱
+```git
+git config --global user.name "username"
+git config --global user.email  useremail@qq.com
+```
+2. 分支
+
+查看分支：`git branch -a`,选择分支`git checkout 分支名称`
