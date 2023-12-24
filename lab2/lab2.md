@@ -57,10 +57,13 @@ Micro Kernel Design（微内核）：kernel mode中代码尽可能少。优缺�
 
 ### 整体思路
 按照提示在相应位置添加函数即可：
-1. 添加系统调用到user/user.h让用户能够从用户态跳转调用。
-2. 修改user/usys.pl，生成stubs文本指令，用于调用。
-3. 修改syscall对应文件，把trace相关的添加进来
-4. 由于要跟踪进程，因此在sysproc和proc里面还要做相应修改
+1. 添加系统调用到user/user.h让用户能够从用户态跳转调用。修改user/usys.pl，生成stubs文本指令，用于调用。
+
+2. 修改syscall.c和syscall.h文件对应的声明
+
+3. 在proc中添加mask变量用于追踪系统调用，sysproc中添加对应函数得知系统调用结果并将其赋给当前进程
+
+4. 在syscall中获取当前进程的mask，从而判断此次系统调用是否成功
 
 关键在于trace()函数的编码：在trapframe中，a0 到 a7:为保存参数寄存器（argument registers）的值，用于传递函数参数，其中，a7为传递给系统调用的参数，a0为系统调用后返回的值。因此trace():
 ```C
@@ -78,6 +81,42 @@ sys_trace(void)
 }
 
 ```
+
+## Lab2：System info
+### 实验目标
+添加一个系统调用sysinfo，显示空闲内存和进程数量。参见kernel/sysinfo.h。使用测试程序sysinfotest进行测试；如果输出“sysinfotest: OK”则通过。
+
+### 提示
+1. Makefile的UPROGS中添加$U/_sysinfotest
+
+2. 在user/user.h中声明struct sysinfo和sysinfo()的原型。
+
+3. 在kernel/kalloc.c中添加一个函数获取空闲内存量
+
+4. 在kernel/proc.c中添加一个函数,获取进程数
+
+5. sysinfo需要将一个struct sysinfo复制回用户空间；请参阅sys_fstat()(kernel/sysfile.c)和filestat()(kernel/file.c)以获取如何使用copyout()执行此操作的示例。
+
+
+### 整体思路
+从用户态到内核态挨个添加
+1. 声明：在user.h和usys.pl（生成内核态调用汇编）中声明。在syscall.h和syscall.c中声明与添加。
+
+2. 完成功能函数：kernel/defs.h（内核声明）中声明free_men和nproc用于获取空闲内存跟进程数。在kernel/kalloc.c和kernel/proc.c中分别实现。
+
+3. 在kernel/sysproc.c中声明并实现sysinfo函数（sysinfo需要将一个struct sysinfo复制回用户空间）
+
+### 关键代码
+获取当前进程数
+![Alt text](image.png)
+
+获取剩余内存
+
+![Alt text](image-3.png)
+
+发送给用户态
+
+![Alt text](image-4.png)
 
 ## 其他
 ### 内网穿透和vscode远程连接
